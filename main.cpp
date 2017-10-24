@@ -32,8 +32,8 @@ float det(mtrx Mat){
 		
 		for(int j=0;j<Mat.Column;j++){
 			mtrx minor=InitZero(Mat.Row-1,Mat.Column-1);
-			int k=0;
-			for(  int y = 0; y < Mat.Row-1; ++y ) {
+			
+			for(  int y = 0; y < Mat.Row-1; ++y ) {int k=0;
                                           for( int x = 0; x < Mat.Column-1; ++x ) {
                                           	if(x==j){k=1;}
                                           	minor.Matrix[y][x]=Mat.Matrix[y+1][x+k];
@@ -45,6 +45,28 @@ float det(mtrx Mat){
                                   
 		}
 		}return result;}else{return 0;}
+	
+}
+mtrx AlgdopMatrix(mtrx Mat){
+	mtrx result;
+	result=InitZero(Mat.Column,Mat.Row);
+		for(int j=0;j<Mat.Row;j++){
+		for(int i=0;i<Mat.Column;i++){
+		mtrx minor=InitZero(Mat.Row-1,Mat.Column-1);
+			
+			int k1=0;
+			for(  int y = 0; y < Mat.Row-1; ++y ) {int k=0;
+                                          for( int x = 0; x < Mat.Column-1; ++x ) {
+                                          	if(x==i){k=1;}
+                                          	if(y==j){k1=1;}
+                                          	minor.Matrix[y][x]=Mat.Matrix[y+k1][x+k];
+                                          }}
+                                    switch((j+i)%2){
+                                    case 0:result.Matrix[j][i]=det(minor); break;
+                                    case 1:result.Matrix[j][i]=(-det(minor));break;
+                                    }      
+		}} return result;
+		
 	
 }
 mtrx sum(mtrx Mat1,mtrx Mat2){
@@ -99,7 +121,7 @@ mtrx Tr(mtrx Mat){
      
      return result;
 }
-mtrx Tr(mtrx Mat){
+mtrx R(mtrx Mat){
      mtrx result;
      result=InitZero(Mat.Row,Mat.Column);
      
@@ -202,6 +224,7 @@ if((Mat1sign.Succes)&&(Mat2sign.Succes)&&(Mat3sign.Succes)){
 }else{exit(0);}
 
 cout<<det( Mat1sign);
-
+mtrx Mat4sign=AlgdopMatrix(Mat1sign);
+coutMatrix(Mat4sign);
 
   }

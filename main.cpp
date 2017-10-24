@@ -62,6 +62,18 @@ mtrx mul(mtrx Mat1,mtrx Mat2){
      }else{result.Succes=false;}
      return result;
 }
+mtrx Tr(mtrx Mat){
+     mtrx result;
+     result=InitZero(Mat.Row,Mat.Column);
+     
+     	for(int j=0;j<Mat.Column;j++){
+     		for(int i=0;i<Mat.Row;i++){
+     			result.Matrix[j][i]=Mat.Matrix[i][j];
+     		}
+     	} 
+     
+     return result;
+}
 bool getMatrix(float **matrix,int ncolumns,int nrows){
 
 
@@ -115,14 +127,22 @@ Mat1sign=getfullMatrix();
 getline(cin, strop);
 istringstream streamop(strop);
 streamop>>op;
+
 if(Mat1sign.Succes){switch(op){
 case 'T':
+    Mat3sign=Tr(Mat1sign);
+    
     break;
 case 'R':
+    
     break;
 default:if((op!='+')&&(op!='-')&&(op!='*')){exit(0);}
     break;
-}}
+}}else{exit(0);}
+if(Mat3sign.Succes){
+	coutMatrix(Mat3sign);
+	exit(0);
+}
 Mat2sign=getfullMatrix(); 
 
   if(Mat2sign.Succes){
@@ -135,14 +155,14 @@ break;
 case '-':Mat3sign=sub(Mat1sign,Mat2sign);
 break;
 
-}
+}else{exit(0);}
 
 
 }
         
 if((Mat1sign.Succes)&&(Mat2sign.Succes)&&(Mat3sign.Succes)){
 	coutMatrix(Mat3sign);
-}
+}else{exit(0)}
 
 
 

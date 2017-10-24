@@ -123,15 +123,18 @@ mtrx Tr(mtrx Mat){
 }
 mtrx R(mtrx Mat){
      mtrx result;
+     if (det(Mat)!=0){
      result=InitZero(Mat.Row,Mat.Column);
+     mtrx A=AlgdopMatrix(Mat);
+     A=Tr(A);
      
      	for(int j=0;j<Mat.Column;j++){
      		for(int i=0;i<Mat.Row;i++){
-     			result.Matrix[j][i]=Mat.Matrix[i][j];
+     			result.Matrix[j][i]=A.Matrix[j][i]*(1/(det(Mat)));
      		}
      	} 
      
-     return result;
+     return result;}else{result.Succes=false; return result;}
 }
 bool getMatrix(float **matrix,int ncolumns,int nrows){
 
@@ -153,7 +156,9 @@ bool getMatrix(float **matrix,int ncolumns,int nrows){
 void coutMatrix(mtrx Matsign){
 	for(int j=0;j<Matsign.Row;j++){
 	       for(int i=0;i<Matsign.Column;i++){
-	       	
+	       	if(Matsign.Matrix[j][i]==-0){
+	       		Matsign.Matrix[j][i]=0;
+	       	}
 	       	cout<<Matsign.Matrix[j][i]<<" ";
 	       }cout<<"\n";
 	}
@@ -193,7 +198,7 @@ case 'T':
     
     break;
 case 'R':
-    
+    Mat3sign=R(Mat1sign);
     break;
 default:if((op!='+')&&(op!='-')&&(op!='*')){exit(0);}
     break;
@@ -223,8 +228,6 @@ if((Mat1sign.Succes)&&(Mat2sign.Succes)&&(Mat3sign.Succes)){
 	coutMatrix(Mat3sign);
 }else{exit(0);}
 
-cout<<det( Mat1sign);
-mtrx Mat4sign=AlgdopMatrix(Mat1sign);
-coutMatrix(Mat4sign);
+
 
   }

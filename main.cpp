@@ -7,6 +7,7 @@ int Row;
 int Column;
 float **Matrix;
 };
+
 mtrx InitZero(int columns,int rows){
 mtrx result;
 float **matrix;
@@ -20,6 +21,30 @@ for( int j = 0; j < columns; ++j ) {
 }
 result.Succes=true;result.Matrix=matrix;result.Column=columns;result.Row=rows;
 return result;
+	
+}
+float det(mtrx Mat){
+	float result;
+            if(Mat.Column==Mat.Row){	
+		if(Mat.Column==2){
+                            result=Mat.Matrix[0][0]*Mat.Matrix[1][1]-Mat.Matrix[0][1]*Mat.Matrix[1][0];			
+		}else{
+		
+		for(int j=0;j<Mat.Column;j++){
+			mtrx minor=InitZero(Mat.Row-1,Mat.Column-1);
+			int k=0;
+			for(  int y = 0; y < Mat.Row-1; ++y ) {
+                                          for( int x = 0; x < Mat.Column-1; ++x ) {
+                                          	if(x==j){k=1;}
+                                          	minor.Matrix[y][x]=Mat.Matrix[y+1][x+k];
+                                          }}
+                                    switch(j%2){
+                                    case 0:result+=Mat.Matrix[0][j]*det(minor); break;
+                                    case 1:result+=(-Mat.Matrix[0][j])*det(minor);break;
+                                    }      
+                                  
+		}
+		}return result;}else{return 0;}
 	
 }
 mtrx sum(mtrx Mat1,mtrx Mat2){
@@ -60,6 +85,18 @@ mtrx mul(mtrx Mat1,mtrx Mat2){
      		}
      	} 
      }else{result.Succes=false;}
+     return result;
+}
+mtrx Tr(mtrx Mat){
+     mtrx result;
+     result=InitZero(Mat.Row,Mat.Column);
+     
+     	for(int j=0;j<Mat.Column;j++){
+     		for(int i=0;i<Mat.Row;i++){
+     			result.Matrix[j][i]=Mat.Matrix[i][j];
+     		}
+     	} 
+     
      return result;
 }
 mtrx Tr(mtrx Mat){
@@ -154,16 +191,17 @@ case '*':Mat3sign=mul(Mat1sign,Mat2sign);
 break;
 case '-':Mat3sign=sub(Mat1sign,Mat2sign);
 break;
-
+}
 }else{exit(0);}
 
 
-}
+
         
 if((Mat1sign.Succes)&&(Mat2sign.Succes)&&(Mat3sign.Succes)){
 	coutMatrix(Mat3sign);
-}else{exit(0)}
+}else{exit(0);}
 
+cout<<det( Mat1sign);
 
 
   }

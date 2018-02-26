@@ -45,7 +45,7 @@ public:
          for (unsigned int i = 0; i < rows; ++i) {
               data[i] = new int[columns];
               for (unsigned int j = 0; j < columns; ++j) {
-                   data[i][j] = 0.0f;
+                   data[i][j] = 0;
               }
          }
          this->rows=rows;
@@ -126,7 +126,7 @@ public:
             return stream;
         }
 
-        data = create_matrix(collumns, rows);
+        this->create_matrix(collumns, rows);
         for (unsigned int i = 0; i< rows; i++) {
             string new_row;
             getline(stream, new_row);
@@ -252,16 +252,8 @@ int main()
         matrix3 = matrix1.mul(matrix2);
         break;
     }
-    if (!matrix3.isnull()) {
-        matrix3.write(cout);
-        mtr1.close();
-        mtr2.close();
-    }
-    else {
-        cout << "Wrong matrixes";
-        mtr1.close();
-        mtr2.close();
-    }
-
+    matrix3.write(cout);
+    mtr1.close();
+    mtr2.close();
     return 0;
 }

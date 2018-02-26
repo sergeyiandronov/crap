@@ -62,13 +62,8 @@ public:
     matrix_t add(matrix_t& other)
     {
         matrix_t result;
-
-        assert(collumns != other.collumns || rows != other.rows) ;
-            
-        
-        result.data = create_matrix(rows, collumns);
-        result.rows = rows;
-        result.collumns = collumns;
+        assert(collumns == other.collumns && rows == other.rows) ;
+        result.create_matrix(rows, collumns);
         for (unsigned int i = 0; i < rows; i++) {
             for (unsigned int j = 0; j < collumns; j++) {
                 result.data[i][j] = data[i][j] + other.data[i][j];
@@ -81,16 +76,8 @@ public:
     matrix_t sub(matrix_t& other)
     {
         matrix_t result;
-
-        if (collumns != other.collumns || rows != other.rows) {
-            result.data = nullptr;
-            destroy(data, rows);
-            destroy(other.data, other.rows);
-            return result;
-        }
-        result.data = create_matrix(rows, collumns);
-        result.rows = rows;
-        result.collumns = collumns;
+        assert(collumns == other.collumns && rows == other.rows); 
+        result.create_matrix(rows, collumns);
         for (unsigned int i = 0; i < rows; i++) {
             for (unsigned int j = 0; j < collumns; j++) {
                 result.data[i][j] = data[i][j] - other.data[i][j];
@@ -102,14 +89,8 @@ public:
     matrix_t mul(matrix_t& other)
     {
         matrix_t result;
-        if (collumns != other.rows) {
-            result.data = nullptr;
-            destroy(data, rows);
-            destroy(other.data, other.rows);
-            return result;
-           
-        }
-        result.data = create_matrix(other.collumns, rows);
+        assert(collumns == other.rows) ;
+        result.create_matrix(other.collumns, rows);
         for (unsigned int i= 0; i < rows; i++) {
             for (unsigned int j = 0; j < other.collumns; j++) {
                 float y = 0;
@@ -119,45 +100,39 @@ public:
                 result.data[i][j] = y;
             }
         }
-        result.collumns = other.collumns;
-        result.rows = rows;
         return result;
     }
     matrix_t trans()
     {
         matrix_t result;
-        result.data = create_matrix(rows, collumns);
+        result.create_matrix(rows, collumns);
 
         for (unsigned int i = 0; i < collumns; i++) {
             for (unsigned int j = 0; j < rows; j++) {
                 result.data[i][j] = data[j][i];
             }
         }
-        result.collumns = rows;
-        result.rows = collumns;
         return result;
     }
 
     ifstream& read(ifstream& stream)
     {
         string header;
-
         char razdel;
         getline(stream, header);
         istringstream str(header);
         if (!((str >> rows) && (str >> razdel) && (str >> collumns) && (razdel == ','))) {
             stream.setstate(std::ios::failbit);
+            return stream;
         }
 
         data = create_matrix(collumns, rows);
         for (unsigned int i = 0; i< rows; i++) {
             string new_row;
             getline(stream, new_row);
-
             istringstream sstream(new_row);
             for (unsigned int j = 0; j< collumns; j++) {
                 if (!(sstream >> data[i][j])) {
-                    destroy(data, rows);
                     stream.setstate(std::ios::failbit);
                     break;
                 }
@@ -170,7 +145,6 @@ public:
     {
         for (unsigned int i = 0; i < rows; i++) {
             for (unsigned int j = 0; j < collumns; j++) {
-
                 stream << data[i][j] << '\t';
             }
             stream << '\n';

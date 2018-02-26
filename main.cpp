@@ -43,9 +43,9 @@ public:
     {
          data = new int*[rows];
          for (unsigned int i = 0; i < rows; ++i) {
-              matrix[i] = new int[columns];
+              data[i] = new int[columns];
               for (unsigned int j = 0; j < columns; ++j) {
-                   matrix[i][j] = 0.0f;
+                   data[i][j] = 0.0f;
               }
          }
          this->rows=rows;
@@ -54,9 +54,9 @@ public:
     }
     ~matrix_t(){
             for (unsigned int i = 0; i < rows; ++i) {
-                delete[] elements[i];
+                delete[] data[i];
             }
-            delete[] elements;
+            delete[] data;
         
     }
     matrix_t add(matrix_t& other)
@@ -169,7 +169,7 @@ bool getcommandifile(ifstream& fs1, ifstream& fs2, char& op)
         if (hop == '+' || hop == '-' || hop == '*') {
             op = hop;
             while (sfn >> hop) {
-                if (hop != '+' && hop != '-' && hop != 'T' && hop != 'R' && hop != '*') {
+                if (hop != '+' && hop != '-' && hop != 'T' && hop != '*') {
                     name2 += hop;
                 }
                 else {
@@ -183,6 +183,9 @@ bool getcommandifile(ifstream& fs1, ifstream& fs2, char& op)
             break;
         }
     }
+    if(op != '+' && op != '-' && op != 'T' && op != '*'){
+        return false;
+    }
     if (name1 != "") {
         fs1.open(name1);
     }
@@ -192,7 +195,7 @@ bool getcommandifile(ifstream& fs1, ifstream& fs2, char& op)
     if (fs1.is_open() && (op == 'T')) {
         return true;
     }
-    else if (fs1.is_open() && fs2.is_open() && op != 'q') {
+    else if (fs1.is_open() && fs2.is_open()) {
         return true;
     }
     else {
@@ -221,8 +224,6 @@ int main()
     if (com == 'T') {
         matrix3 = matrix1.trans();
         matrix3.write(cout);
-        matrix1.clearmem();
-        matrix3.clearmem();
         mtr1.close();
         mtr2.close();
 
@@ -230,14 +231,12 @@ int main()
     }
     else if (com != '+' && com != '-' && com != '*') {
         cout << "An error has occured while reading input data";
-        matrix1.clearmem();
         mtr1.close();
         mtr2.close();
         exit(0);
     }
     if (!matrix2.read(mtr2)) {
         cout << "An error has occured while reading input data";
-        matrix1.clearmem();
         mtr1.close();
         mtr2.close();
         exit(0);
@@ -255,9 +254,6 @@ int main()
     }
     if (!matrix3.isnull()) {
         matrix3.write(cout);
-        matrix1.clearmem();
-        matrix2.clearmem();
-        matrix3.clearmem();
         mtr1.close();
         mtr2.close();
     }

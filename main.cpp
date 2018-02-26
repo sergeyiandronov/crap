@@ -1,233 +1,297 @@
+
 #include <iostream>
 #include <sstream>
+#include <fstream>
+#include <assert.h>
+
 using namespace std;
-struct mtrx{
-bool Succes=false;
-int Row;
-int Column;
-float **Matrix;
-};
 
-mtrx InitZero(int columns,int rows){
-mtrx result;
-float **matrix;
 
-     matrix = new float *[ rows];
-for(  int i = 0; i < rows; ++i ) {
-    matrix[ i ] = new float[ columns];
-for( int j = 0; j < columns; ++j ) {
-        matrix[ i ][ j ] = 0.0f;
+void finit()
+{
+    ofstream fout;
+    fout.open("A.txt");
+    fout << "3, 3\n2 2 2\n2 2 2\n2 2 2";
+    fout.close();
+
+    fout.open("B.txt");
+    fout << "2, 2\n1 1 1\n1 1 1\n1 1 1";
+    fout.close();
+
+    fout.open("C.txt");
+    fout << "3, 3\n1 2 2\n0 4 4\n0 4 0";
+    fout.close();
+
+    fout.open("D.txt");
+    fout << "3, 3\n1 2 3\n4 5 6\n7 8 9";
+    fout.close();
+}
+
+class matrix_t {
+    int** data;
+    unsigned int rows;
+    unsigned int collumns;
+
+public:
+    matrix_t(){
+        data=nullptr;
+        rows=0;
+        collumns=0;
     }
-}
-result.Succes=true;result.Matrix=matrix;result.Column=columns;result.Row=rows;
-return result;
-	
-}
-float det(mtrx Mat){
-	float result;
-            if(Mat.Column==Mat.Row){	
-		if(Mat.Column==2){
-                            result=Mat.Matrix[0][0]*Mat.Matrix[1][1]-Mat.Matrix[0][1]*Mat.Matrix[1][0];			
-		}else{
-		
-		for(int j=0;j<Mat.Column;j++){
-			mtrx minor=InitZero(Mat.Row-1,Mat.Column-1);
-			
-			for(  int y = 0; y < Mat.Row-1; ++y ) {int k=0;
-                                          for( int x = 0; x < Mat.Column-1; ++x ) {
-                                          	if(x==j){k=1;}
-                                          	minor.Matrix[y][x]=Mat.Matrix[y+1][x+k];
-                                          }}
-                                    switch(j%2){
-                                    case 0:result+=Mat.Matrix[0][j]*det(minor); break;
-                                    case 1:result+=(-Mat.Matrix[0][j])*det(minor);break;
-                                    }      
-                                  
-		}
-		}return result;}else{return 0;}
-	
-}
-mtrx AlgdopMatrix(mtrx Mat){
-	mtrx result;
-	result=InitZero(Mat.Column,Mat.Row);
-		for(int j=0;j<Mat.Row;j++){
-		for(int i=0;i<Mat.Column;i++){
-		mtrx minor=InitZero(Mat.Row-1,Mat.Column-1);
-			
-			int k1=0;
-			for(  int y = 0; y < Mat.Row-1; ++y ) {int k=0;
-                                          for( int x = 0; x < Mat.Column-1; ++x ) {
-                                          	if(x==i){k=1;}
-                                          	if(y==j){k1=1;}
-                                          	minor.Matrix[y][x]=Mat.Matrix[y+k1][x+k];
-                                          }}
-                                    switch((j+i)%2){
-                                    case 0:result.Matrix[j][i]=det(minor); break;
-                                    case 1:result.Matrix[j][i]=(-det(minor));break;
-                                    }      
-		}} return result;
-		
-	
-}
-mtrx sum(mtrx Mat1,mtrx Mat2){
-     mtrx result;
-     result=InitZero(Mat1.Column,Mat1.Row);
-     if((Mat1.Row==Mat2.Row)&&(Mat1.Column==Mat2.Column)){
-     	for(int j=0;j<Mat1.Row;j++){
-     		for(int i=0;i<Mat1.Column;i++){
-     			result.Matrix[j][i]=Mat1.Matrix[j][i]+Mat2.Matrix[j][i];
-     		}
-     	} 
-     }else{result.Succes=false;}
-     return result;
-}
-mtrx sub(mtrx Mat1,mtrx Mat2){
-     mtrx result;
-     result=InitZero(Mat1.Column,Mat1.Row);
-     if((Mat1.Row==Mat2.Row)&&(Mat1.Column==Mat2.Column)){
-     	for(int j=0;j<Mat1.Row;j++){
-     		for(int i=0;i<Mat1.Column;i++){
-     			result.Matrix[j][i]=Mat1.Matrix[j][i]-Mat2.Matrix[j][i];
-     		}
-     	} 
-     }else{result.Succes=false;}
-     return result;
-}
-mtrx mul(mtrx Mat1,mtrx Mat2){
-     mtrx result;
-     result=InitZero(Mat2.Column,Mat1.Row);
-     if(Mat1.Column==Mat2.Row){
-     	for(int j=0;j<Mat1.Row;j++){
-     		for(int i=0;i<Mat2.Column;i++){
-     			float y=0;
-     			for(int z=0;z<Mat1.Column;z++){
-     			    y+=Mat1.Matrix[j][z]*Mat2.Matrix[z][i];	
-     			}
-     			result.Matrix[j][i]=y;
-     		}
-     	} 
-     }else{result.Succes=false;}
-     return result;
-}
-mtrx Tr(mtrx Mat){
-     mtrx result;
-     result=InitZero(Mat.Row,Mat.Column);
-     
-     	for(int j=0;j<Mat.Column;j++){
-     		for(int i=0;i<Mat.Row;i++){
-     			result.Matrix[j][i]=Mat.Matrix[i][j];
-     		}
-     	} 
-     
-     return result;
-}
-mtrx R(mtrx Mat){
-     mtrx result;
-     if (det(Mat)!=0){
-     result=InitZero(Mat.Row,Mat.Column);
-     mtrx A=AlgdopMatrix(Mat);
-     A=Tr(A);
-     
-     	for(int j=0;j<Mat.Column;j++){
-     		for(int i=0;i<Mat.Row;i++){
-     			result.Matrix[j][i]=A.Matrix[j][i]*(1/(det(Mat)));
-     		}
-     	} 
-     
-     return result;}else{result.Succes=false; return result;}
-}
-bool getMatrix(float **matrix,int ncolumns,int nrows){
-
-
-	for(int j=0;j<nrows;j++){
-                   		string newrow;	
-	       getline(cin,newrow);
-	       istringstream stream(newrow);
-	       for(int i=0;i<ncolumns;i++){
-	       	if(!(stream>>matrix[j][i])){
-	       		return false;
-	       	}
-	       }
-	}
-	return true;
-	
-}
-
-void coutMatrix(mtrx Matsign){
-	for(int j=0;j<Matsign.Row;j++){
-	       for(int i=0;i<Matsign.Column;i++){
-	       	if(Matsign.Matrix[j][i]==-0){
-	       		Matsign.Matrix[j][i]=0;
-	       	}
-	       	cout<<Matsign.Matrix[j][i]<<" ";
-	       }cout<<"\n";
-	}
-}
-mtrx getfullMatrix(){
-mtrx result;
-float **matrix;
-string header;
-int rows;
-int columns;
-        char razdel;
-       getline(cin,header);
-        istringstream str(header);
-        if((str>>rows)&&(str>>razdel)&&(str>>columns)&&(razdel==',')){
-     matrix = new float *[ rows];
-for(  int i = 0; i < rows; ++i ) {
-    matrix[ i ] = new float[ columns];
-for( int j = 0; j < columns; ++j ) {
-        matrix[ i ][ j ] = 0.0f;
-    }
-}result.Succes=getMatrix(matrix,columns,rows);result.Row=rows;result.Column=columns;result.Matrix=matrix;return result;}result.Succes=false;return result;}
-int main(){
-	mtrx Mat3sign;
-	 
-        mtrx Mat1sign;
-mtrx Mat2sign;
-string strop;
-char op;
-Mat1sign=getfullMatrix();
-getline(cin, strop);
-istringstream streamop(strop);
-streamop>>op;
-
-if(Mat1sign.Succes){switch(op){
-case 'T':
-    Mat3sign=Tr(Mat1sign);
+    void create_matrix(unsigned int columns,
+    unsigned int rows)
+    {
+         data = new int*[rows];
+         for (unsigned int i = 0; i < rows; ++i) {
+              matrix[i] = new int[columns];
+              for (unsigned int j = 0; j < columns; ++j) {
+                   matrix[i][j] = 0.0f;
+              }
+         }
+         this->rows=rows;
+         this->collumns=collumns;
     
-    break;
-case 'R':
-    Mat3sign=R(Mat1sign);
-    break;
-default:if((op!='+')&&(op!='-')&&(op!='*')){exit(0);}
-    break;
-}}else{exit(0);}
-if(Mat3sign.Succes){
-	coutMatrix(Mat3sign);
-	exit(0);
-}
-Mat2sign=getfullMatrix(); 
-
-  if(Mat2sign.Succes){
-          switch(op){
-case '+':
-Mat3sign=sum(Mat1sign,Mat2sign);
-break;
-case '*':Mat3sign=mul(Mat1sign,Mat2sign);
-break;
-case '-':Mat3sign=sub(Mat1sign,Mat2sign);
-break;
-}
-}else{exit(0);}
-
-
-
+    }
+    ~matrix_t(){
+            for (unsigned int i = 0; i < rows; ++i) {
+                delete[] elements[i];
+            }
+            delete[] elements;
         
-if((Mat1sign.Succes)&&(Mat2sign.Succes)&&(Mat3sign.Succes)){
-	coutMatrix(Mat3sign);
-}else{exit(0);}
+    }
+    matrix_t add(matrix_t& other)
+    {
+        matrix_t result;
 
+        assert(collumns != other.collumns || rows != other.rows) ;
+            
+        
+        result.data = create_matrix(rows, collumns);
+        result.rows = rows;
+        result.collumns = collumns;
+        for (unsigned int i = 0; i < rows; i++) {
+            for (unsigned int j = 0; j < collumns; j++) {
+                result.data[i][j] = data[i][j] + other.data[i][j];
+            }
+        }
 
+        return result;
+    };
+  
+    matrix_t sub(matrix_t& other)
+    {
+        matrix_t result;
 
-  }
+        if (collumns != other.collumns || rows != other.rows) {
+            result.data = nullptr;
+            destroy(data, rows);
+            destroy(other.data, other.rows);
+            return result;
+        }
+        result.data = create_matrix(rows, collumns);
+        result.rows = rows;
+        result.collumns = collumns;
+        for (unsigned int i = 0; i < rows; i++) {
+            for (unsigned int j = 0; j < collumns; j++) {
+                result.data[i][j] = data[i][j] - other.data[i][j];
+            }
+        }
+
+        return result;
+    }
+    matrix_t mul(matrix_t& other)
+    {
+        matrix_t result;
+        if (collumns != other.rows) {
+            result.data = nullptr;
+            destroy(data, rows);
+            destroy(other.data, other.rows);
+            return result;
+           
+        }
+        result.data = create_matrix(other.collumns, rows);
+        for (unsigned int i= 0; i < rows; i++) {
+            for (unsigned int j = 0; j < other.collumns; j++) {
+                float y = 0;
+                for (unsigned int z = 0; z < collumns; z++) {
+                    y += data[i][z] * other.data[z][j];
+                }
+                result.data[i][j] = y;
+            }
+        }
+        result.collumns = other.collumns;
+        result.rows = rows;
+        return result;
+    }
+    matrix_t trans()
+    {
+        matrix_t result;
+        result.data = create_matrix(rows, collumns);
+
+        for (unsigned int i = 0; i < collumns; i++) {
+            for (unsigned int j = 0; j < rows; j++) {
+                result.data[i][j] = data[j][i];
+            }
+        }
+        result.collumns = rows;
+        result.rows = collumns;
+        return result;
+    }
+
+    ifstream& read(ifstream& stream)
+    {
+        string header;
+
+        char razdel;
+        getline(stream, header);
+        istringstream str(header);
+        if (!((str >> rows) && (str >> razdel) && (str >> collumns) && (razdel == ','))) {
+            stream.setstate(std::ios::failbit);
+        }
+
+        data = create_matrix(collumns, rows);
+        for (unsigned int i = 0; i< rows; i++) {
+            string new_row;
+            getline(stream, new_row);
+
+            istringstream sstream(new_row);
+            for (unsigned int j = 0; j< collumns; j++) {
+                if (!(sstream >> data[i][j])) {
+                    destroy(data, rows);
+                    stream.setstate(std::ios::failbit);
+                    break;
+                }
+            }
+        }
+
+        return stream;
+    };
+    ostream& write(ostream& stream)
+    {
+        for (unsigned int i = 0; i < rows; i++) {
+            for (unsigned int j = 0; j < collumns; j++) {
+
+                stream << data[i][j] << '\t';
+            }
+            stream << '\n';
+        }
+        return stream;
+    };
+};
+bool getcommandifile(ifstream& fs1, ifstream& fs2, char& op)
+{
+    op = 'q';
+    string fn;
+    getline(cin, fn);
+
+    istringstream sfn(fn);
+    string name1 = "";
+    string name2 = "";
+    char hop;
+    while (sfn >> hop) {
+        if (hop != '+' && hop != '-' && hop != 'T' && hop != '*') {
+            name1 += hop;
+        }
+        if (hop == '+' || hop == '-' || hop == '*') {
+            op = hop;
+            while (sfn >> hop) {
+                if (hop != '+' && hop != '-' && hop != 'T' && hop != 'R' && hop != '*') {
+                    name2 += hop;
+                }
+                else {
+                    return false;
+                }
+            }
+            break;
+        }
+        if (hop == 'T') {
+            op = hop;
+            break;
+        }
+    }
+    if (name1 != "") {
+        fs1.open(name1);
+    }
+    if (name2 != "") {
+        fs2.open(name2);
+    }
+    if (fs1.is_open() && (op == 'T')) {
+        return true;
+    }
+    else if (fs1.is_open() && fs2.is_open() && op != 'q') {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+int main()
+{
+    char com;
+    finit();
+    ifstream mtr1, mtr2;
+    matrix_t matrix1, matrix2, matrix3;
+    if (!getcommandifile(mtr1, mtr2, com)) {
+
+        cout << "An error has occured while reading input data";
+        exit(0);
+    }
+
+    if (!matrix1.read(mtr1)) {
+        cout << "An error has occured while reading input data";
+        mtr1.close();
+        mtr2.close();
+        exit(0);
+    }
+    if (com == 'T') {
+        matrix3 = matrix1.trans();
+        matrix3.write(cout);
+        matrix1.clearmem();
+        matrix3.clearmem();
+        mtr1.close();
+        mtr2.close();
+
+        exit(0);
+    }
+    else if (com != '+' && com != '-' && com != '*') {
+        cout << "An error has occured while reading input data";
+        matrix1.clearmem();
+        mtr1.close();
+        mtr2.close();
+        exit(0);
+    }
+    if (!matrix2.read(mtr2)) {
+        cout << "An error has occured while reading input data";
+        matrix1.clearmem();
+        mtr1.close();
+        mtr2.close();
+        exit(0);
+    }
+    switch (com) {
+    case '+':
+        matrix3 = matrix1.add(matrix2);
+        break;
+    case '-':
+        matrix3 = matrix1.sub(matrix2);
+        break;
+    case '*':
+        matrix3 = matrix1.mul(matrix2);
+        break;
+    }
+    if (!matrix3.isnull()) {
+        matrix3.write(cout);
+        matrix1.clearmem();
+        matrix2.clearmem();
+        matrix3.clearmem();
+        mtr1.close();
+        mtr2.close();
+    }
+    else {
+        cout << "Wrong matrixes";
+        mtr1.close();
+        mtr2.close();
+    }
+
+    return 0;
+}
